@@ -2,24 +2,167 @@
 
 基于微信小程序的食堂/餐饮在线点餐系统，支持菜品浏览、购物车下单、订单管理等完整业务流程。
 
-## ✨ 功能模块
+## 🏗 系统架构
 
-- **用户登录** — 微信静默授权登录，使用 JSESSIONID 维持会话
-- **首页** — 菜品分类展示、轮播 Banner
-- **菜品列表** — 按分类浏览菜品，查看详情
-- **购物车 & 下单** — 添加菜品到购物车、确认订单、提交下单
-- **订单管理** — 订单列表、订单详情查看
-- **个人中心** — 我的记录、消费统计
+```mermaid
+flowchart LR
+    subgraph Client["📱 客户端"]
+        MP[微信小程序<br/>WXML / WXSS / JS]
+        Admin[管理后台<br/>Vite + Vue 3]
+    end
+
+    subgraph Backend["🖥 后端服务"]
+        API[Controller<br/>RESTful API]
+        SVC[Service<br/>业务逻辑层]
+        MAP[MyBatis Mapper<br/>数据持久化]
+    end
+
+    subgraph Data["💾 数据存储"]
+        MySQL[(MySQL 8.0<br/>wxshop)]
+        FS[(文件存储<br/>uploads/)]
+    end
+
+    MP -->|HTTP + Cookie| API
+    Admin -->|HTTP + Token| API
+    API -->|调用| SVC
+    SVC -->|ORM| MAP
+    MAP -->|JDBC| MySQL
+    MAP -->|读写| FS
+
+    style MP fill:#07C160,color:#fff
+    style Admin fill:#42B883,color:#fff
+    style Backend fill:#6DB33F,color:#fff
+    style MySQL fill:#4479A1,color:#fff
+```
+
+## 🔄 业务流程
+
+```mermaid
+flowchart TD
+    Start([启动小程序]) --> Login{微信授权}
+    Login -->|成功| Home[首页]
+    Login -->|失败| ReLogin[重新登录]
+    ReLogin --> Login
+
+    Home --> Browse[菜品列表]
+    Home --> Banner[轮播推荐]
+
+    Browse --> Detail[菜品详情]
+    Detail --> Cart[加入购物车]
+
+    Checkout[确认订单] --> Note[填写备注]
+    Note --> Pay[提交订单]
+
+    Pay --> Success{支付结果}
+    Success -->|成功| OrderDetail[订单详情页]
+    Success -->|失败| Retry[重试支付]
+    Retry --> Pay
+
+    OrderDetail --> OrderList[订单列表]
+    OrderList --> Profile[个人中心]
+
+    Profile --> Record[我的记录]
+    Profile --> Logout[退出登录] --> Start
+
+    Cart --> Checkout
+    Browse --> Cart
+
+    style Start fill:#07C160,color:#fff
+    style Pay fill:#FF9C35,color:#fff
+    style Success fill:#4CAF50,color:#fff
+    style Logout fill:#f44336,color:#fff
+```
 
 ## 🛠 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| **前端** | 微信小程序原生 (WXML / WXSS / JS) |
-| **后端** | Spring Boot 3.3.5 + Java 17 + Maven |
-| **ORM** | MyBatis + PageHelper 分页 |
-| **数据库** | MySQL 8.0 |
-| **管理后台** | Vite + Vue (admin-ui) |
+```mermaid
+graph TB
+    subgraph Frontend["📱 前端"]
+        WXMP[微信小程序原生开发]
+        WXML[WXML 模板]
+        WXSS[WXSS 样式]
+        JS[JavaScript 逻辑]
+        WXMP --> WXML & WXSS & JS
+    end
+
+    subgraph Backend["⚙️ 后端"]
+        SB[Spring Boot 3.3.5]
+        JAVA[Java 17]
+        MB[MyBatis ORM]
+        PH[PageHelper 分页]
+        JACK[Jackson JSON]
+        SB --> JAVA & MB & PH & JACK
+    end
+
+    subgraph Admin["🎨 管理后台"]
+        Vite[Vite 构建工具]
+        Vue3[Vue 3 响应式]
+        Pinia[Pinia 状态管理]
+        Router[Vue Router 路由]
+        Vite --> Vue3 & Pinia & Router
+    end
+
+    subgraph Database["🗄 数据层"]
+        DB[(MySQL 8.0)]
+        FileStore[(本地文件存储)]
+    end
+
+    Frontend -->|HTTP /api| Backend
+    Admin -->|HTTP /admin| Backend
+    Backend --> DB & FileStore
+
+    style Frontend fill:#07C160,color:#fff
+    style Backend fill:#6DB33F,color:#fff
+    style Admin fill:#42B883,color:#fff
+    style Database fill:#4479A1,color:#fff
+```
+
+## 📡 API 时序图
+
+```mermaid
+sequenceDiagram
+    actor User as 👤 用户
+    participant MP as 📱 小程序前端
+    participant API as ⚙️ Spring Boot
+    participant DB as 💾 MySQL
+
+    Note over User,DB: === 登录鉴权 ===
+    User->>MP: 打开小程序
+    MP->>MP: wx.login() 获取 code
+    MP->>API: POST /api/user/login {code}
+    API->>API: 微信 code2Session → openid
+    API->>DB: 查询/创建用户记录
+    DB-->>API: 用户信息
+    API-->>MP: 返回 Set-Cookie JSESSIONID
+    MP->>MP: 存储 Cookie，完成登录
+
+    Note over User,DB: === 浏览菜品 ===
+    User->>MP: 点击分类
+    MP->>API: GET /api/food/list?categoryId=xxx
+    API->>DB: SELECT * FROM wxshop_food WHERE category_id = ?
+    DB-->>API: 菜品数据列表
+    API-->>MP: 返回菜品JSON
+    MP->>User: 渲染菜品卡片
+
+    Note over User,DB: === 下单流程 ===
+    User->>MP: 确认购物车并提交
+    MP->>API: POST /api/order/create {items[], remark}
+    API->>DB: 开启事务
+    API->>DB: INSERT INTO wxshop_order ...
+    API->>DB: INSERT INTO wxshop_order_item ...
+    API->>DB: 提交事务 COMMIT
+    DB-->>API: 订单创建成功
+    API-->>MP: 返回订单ID
+    MP->>User: 跳转订单详情页
+
+    Note over User,DB: === 查看记录 ===
+    User->>MP: 进入「我的」页面
+    MP->>API: GET /api/order/myOrders
+    API->>DB: SELECT * FROM wxshop_order WHERE user_id = ?
+    DB-->>API: 订单历史
+    API-->>MP: 订单列表JSON
+    MP->>User: 展示消费记录
+```
 
 ## 📂 目录结构
 
