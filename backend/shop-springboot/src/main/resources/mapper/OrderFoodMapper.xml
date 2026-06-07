@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fun.xingji.wxshop.mapper.OrderFoodMapper">
+
+    <!--
+        订单-商品关联（OrderFood）MyBatis SQL 映射
+        查询订单明细时 LEFT JOIN 商品表获取名称和图片
+    -->
+
+    <!-- 小程序端: 获取订单明细（含商品名称和图片，LEFT JOIN） -->
+    <select id="selectByOrderIdWithFood" resultType="java.util.Map">
+        select ofd.food_id, ofd.number, ofd.price, f.name, f.image_url
+        from wxshop_order_food ofd
+                 left join wxshop_food f on f.id = ofd.food_id and f.status = 1 and f.delete_time is null
+        where ofd.order_id = #{orderId}
+    </select>
+
+</mapper>

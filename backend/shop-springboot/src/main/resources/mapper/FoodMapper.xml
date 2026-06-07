@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fun.xingji.wxshop.mapper.FoodMapper">
+
+    <!--
+        商品（Food）MyBatis SQL 映射
+        包含小程序端上架商品查询、管理员端多条件搜索分页、聚合统计
+    -->
+
+    <!-- 商品结果映射（含分类名称） -->
+    <resultMap id="FoodWithCategoryMap" type="fun.xingji.wxshop.entity.Food">
+        <id column="id" property="id"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="name" property="name"/>
+        <result column="price" property="price"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="delete_time" property="deleteTime"/>
+        <result column="category_name" property="categoryName"/>
+    </resultMap>
+
+    <!-- 公共搜索条件片段（countBySearch 和 selectPageBySearch 复用） -->
+    <sql id="searchConditions">
+        <if test="recycle">delete_time is not null</if>
+        <if test="!recycle">delete_time is null</if>
+        <if test="categoryId != null and categoryId > 0">
+            and category_id = #{categoryId}
+        </if>
+        <if test="search != null and search != ''">
+            and f.name like concat('%', #{search}, '%')
+        </if>
+    </sql>
+
+    <!-- 小程序端: 获取上架商品列表（含分类名称，按分类排序） -->
+    <select id="selectActiveByCategory" resultMap="FoodWithCategoryMap">
+        select f.id, f.category_id, f.name, f.price, f.image_url, f.status,
+               f.create_time, f.update_time, f.delete_time, c.name as category_name
+        from wxshop_food f
+                 left join wxshop_category c on c.id = f.category_id
+        where f.status = 1 and f.delete_time is null
+        order by c.sort asc, f.id asc
+    </select>
+
+    <!-- 管理员端: 商品多条件搜索计数（动态 SQL） -->
+    <select id="countBySearch" resultType="int">
+        select count(*) from wxshop_food f
+        <where>
+            <include refid="searchConditions"/>
+        </where>
+    </select>
+
+    <!-- 管理员端: 商品多条件搜索分页（动态 SQL） -->
+    <select id="selectPageBySearch" resultMap="FoodWithCategoryMap">
+        select f.id, f.category_id, f.name, f.price, f.image_url, f.status,
+               f.create_time, f.update_time, f.delete_time
+        from wxshop_food f
+        <where>
+            <include refid="searchConditions"/>
+        </where>
+        order by f.id desc
+        limit #{size} offset #{offset}
+    </select>
+
+    <!-- 小程序端: 批量获取指定ID的商品（用于购物车回显） -->
+    <select id="selectByIds" resultType="fun.xingji.wxshop.entity.Food">
+        select id, price
+        from wxshop_food
+        where status = 1 and delete_time is null and id in
+        <foreach collection="idList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 管理员端: 统计各分类下的商品数量分布（聚合 + 分组） -->
+    <select id="selectCategoryDistribution" resultType="java.util.Map">
+        select c.id as categoryId, c.name as categoryName, count(f.id) as foodCount
+        from wxshop_category c
+                 left join wxshop_food f on c.id = f.category_id
+        group by c.id, c.name
+        having foodCount > 0
+        order by foodCount desc
+    </select>
+
+</mapper>

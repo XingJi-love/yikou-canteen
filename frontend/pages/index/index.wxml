@@ -1,0 +1,98 @@
+<!--
+  首页模板（pages/index/index.wxml）
+  区块一：Banner 轮播图
+  区块二：今日推荐 + 门店自取 / 外卖配送
+  区块三：开启点餐之旅入口
+  区块四：店铺品牌信息与特色标签
+  区块五：店铺介绍、地址、电话、营业时间
+-->
+<view class="container">
+    <!-- 区块一：Banners轮播图 -->
+    <view class="swiper-wrapper">
+        <swiper class="banner-swiper" indicator-dots="true" autoplay="true" interval="4000" duration="500"
+                indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#FF6B35" circular>
+            <block wx:for="{{ swiper }}" wx:key="*this">
+                <swiper-item>
+                    <image src="{{ item }}" class="banner-image" mode="aspectFill"/>
+                </swiper-item>
+            </block>
+        </swiper>
+    </view>
+
+    <!-- 区块二：今日推荐 + 功能入口 -->
+    <view class="feature-section">
+        <!-- 左侧：今日推荐卡片 -->
+        <view class="recommend-card">
+            <image src="{{ recommend_img }}" class="recommend-image" mode="aspectFill"/>
+            <view class="recommend-overlay">
+                <view class="recommend-tag">今日推荐</view>
+                <view class="recommend-info">
+                    <text class="recommend-name">{{ recommend_name }}</text>
+                    <text class="recommend-price">¥{{ recommend_price }}</text>
+                </view>
+            </view>
+        </view>
+
+        <!-- 右侧：功能按钮 -->
+        <view class="action-buttons">
+            <view class="action-btn pickup-btn" bindtap="pickupTap">
+                <view class="action-icon-wrap pickup-icon">
+                    <image class="svg-icon" src="/images/icons/store.svg" mode="aspectFit"/>
+                </view>
+                <text class="action-text">门店自取</text>
+            </view>
+            <view class="action-btn delivery-btn" bindtap="deliveryTap">
+                <view class="action-icon-wrap delivery-icon">
+                    <image class="svg-icon" src="/images/icons/delivery.svg" mode="aspectFit"/>
+                </view>
+                <text class="action-text delivery-text">外卖配送</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 区块三：开启点餐之旅 -->
+    <view class="menu-bar">
+        <view class="menu-block" bindtap="start">
+            <view class="menu-start">开启点餐之旅→</view>
+        </view>
+    </view>
+
+    <!-- 区块四：店铺品牌信息 -->
+    <view class="store-brand">
+        <text class="store-name">{{ store_name }}</text>
+        <text class="store-subtitle">{{ store_subtitle }}</text>
+        <view class="store-tags">
+            <view class="tag-item">
+                <image class="tag-svg-icon" src="/images/icons/food-fresh.svg" mode="aspectFit"/>
+                <text class="tag-text">新鲜食材</text>
+            </view>
+            <view class="tag-item">
+                <image class="tag-svg-icon" src="/images/icons/chef.svg" mode="aspectFit"/>
+                <text class="tag-text">传统手艺</text>
+            </view>
+            <view class="tag-item">
+                <image class="tag-svg-icon" src="/images/icons/home.svg" mode="aspectFit"/>
+                <text class="tag-text">舒适环境</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 区块五：店铺介绍与联系信息 -->
+    <view class="store-detail">
+        <text class="store-desc">{{ store_description }}</text>
+        <view class="contact-list">
+            <view class="contact-item">
+                <image class="contact-svg-icon" src="/images/icons/location.svg" mode="aspectFit"/>
+                <text class="contact-text">{{ store_address }}</text>
+            </view>
+            <view class="contact-item">
+                <image class="contact-svg-icon" src="/images/icons/phone.svg" mode="aspectFit"/>
+                <text class="contact-text">{{ store_phone }}</text>
+            </view>
+            <view class="contact-item">
+                <image class="contact-svg-icon" src="/images/icons/clock.svg" mode="aspectFit"/>
+                <text class="contact-text">{{ store_hours }}</text>
+            </view>
+        </view>
+    </view>
+</view>

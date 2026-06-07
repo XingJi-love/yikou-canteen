@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fun.xingji.wxshop.mapper.OrderMapper">
+
+    <!--
+        订单（Order）MyBatis SQL 映射
+        包含订单一对多明细映射、管理员多条件搜索分页（含 N+1 优化）、
+        小程序端游标分页、聚合统计查询（概览/趋势/分布）
+    -->
+
+    <!-- 订单结果映射（含一对多订单明细，通过单次JOIN消除N+1查询） -->
+    <resultMap id="OrderWithFoodsMap" type="fun.xingji.wxshop.entity.Order">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="price" property="price"/>
+        <result column="promotion" property="promotion"/>
+        <result column="number" property="number"/>
+        <result column="is_pay" property="isPay"/>
+        <result column="is_taken" property="isTaken"/>
+        <result column="comment" property="comment"/>
+        <result column="create_time" property="createTime"/>
+        <result column="pay_time" property="payTime"/>
+        <result column="taken_time" property="takenTime"/>
+        <collection property="orderFoods" ofType="fun.xingji.wxshop.entity.OrderFood">
+            <id column="ofd_id" property="id"/>
+            <result column="ofd_order_id" property="orderId"/>
+            <result column="ofd_food_id" property="foodId"/>
+            <result column="ofd_number" property="number"/>
+            <result column="ofd_price" property="price"/>
+            <result column="ofd_food_name" property="foodName"/>
+        </collection>
+    </resultMap>
+
+    <!-- 管理员端: 订单多条件搜索计数 -->
+    <select id="countBySearch" resultType="int">
+        select count(*)
+        from wxshop_order
+        <where>
+            <if test="userId != null and userId > 0">and user_id = #{userId}</if>
+            <if test="isPay != null and isPay >= 0">and is_pay = #{isPay}</if>
+            <if test="isTaken != null and isTaken >= 0">and is_taken = #{isTaken}</if>
+            <if test="search != null">and id = #{search}</if>
+        </where>
+    </select>
+
+    <!--
+        管理员端: 订单多条件搜索分页（含订单明细一对多映射）
+        使用派生表 JOIN 先对订单分页（兼容 MySQL 低版本不支持 IN + LIMIT 子查询），
+        再 LEFT JOIN 订单明细和商品信息，避免 JOIN 后分页导致数据错乱。
+        单次查询完成，消除 N+1 问题。
+    -->
+    <select id="selectOrdersWithFoods" resultMap="OrderWithFoodsMap">
+        select o.id, o.user_id, o.price, o.promotion, o.number, o.is_pay, o.is_taken,
+        o.comment, o.create_time, o.pay_time, o.taken_time,
+        ofd.id as ofd_id, ofd.order_id as ofd_order_id, ofd.food_id as ofd_food_id,
+        ofd.number as ofd_number, ofd.price as ofd_price, f.name as ofd_food_name
+        from wxshop_order o
+        inner join (
+        select id from wxshop_order
+        <where>
+            <if test="userId != null and userId > 0">and user_id = #{userId}</if>
+            <if test="isPay != null and isPay >= 0">and is_pay = #{isPay}</if>
+            <if test="isTaken != null and isTaken >= 0">and is_taken = #{isTaken}</if>
+            <if test="search != null">and id = #{search}</if>
+        </where>
+        order by id desc
+        limit #{size} offset #{offset}
+        ) tmp on o.id = tmp.id
+        left join wxshop_order_food ofd on o.id = ofd.order_id
+        left join wxshop_food f on f.id = ofd.food_id
+        order by o.id desc
+    </select>
+
+    <!--
+        小程序端: 用户已支付订单游标分页（含订单明细一对多映射）
+        复用 OrderWithFoodsMap，增加 user_id 过滤和游标分页支持。
+        消除 FoodService.getOrderList() 的 N+1 循环查询。
+    -->
+    <select id="selectUserOrdersWithFoods" resultMap="OrderWithFoodsMap">
+        select o.id, o.user_id, o.price, o.promotion, o.number, o.is_pay, o.is_taken,
+        o.comment, o.create_time, o.pay_time, o.taken_time,
+        ofd.id as ofd_id, ofd.order_id as ofd_order_id, ofd.food_id as ofd_food_id,
+        ofd.number as ofd_number, ofd.price as ofd_price, f.name as ofd_food_name
+        from wxshop_order o
+        left join wxshop_order_food ofd on o.id = ofd.order_id
+        left join wxshop_food f on f.id = ofd.food_id
+        where o.user_id = #{userId} and o.is_pay = 1
+        <if test="lastId != null and lastId > 0">
+            and o.id &lt; #{lastId}
+        </if>
+        order by o.id desc
+        limit #{size}
+    </select>
+
+    <!-- ============ 聚合统计查询（替代 N+1 循环调用） ============ -->
+
+    <!-- 概览统计：单次查询返回全部指标 -->
+    <select id="selectOverviewStats" resultType="java.util.Map">
+        select count(*)                                                                                         as totalOrders,
+               count(case when is_pay = 1 and is_taken = 0 then 1 end)                                          as pending,
+               coalesce(sum(case when is_pay = 1 then price end), 0)                                            as totalRevenue,
+               count(case when is_pay = 1 and date(pay_time) = curdate() then 1 end)                           as todayOrders,
+               coalesce(sum(case when is_pay = 1 and date(pay_time) = curdate() then price end),
+                        0)                                                                                      as todayRevenue,
+               count(case when is_pay = 1 and date(pay_time) = date_sub(curdate(), interval 1 day) then 1
+                     end)                                                                                       as yesterdayOrders,
+               coalesce(sum(case when is_pay = 1 and date(pay_time) = date_sub(curdate(), interval 1 day) then price
+                            end),
+                        0)                                                                                      as yesterdayRevenue
+        from wxshop_order
+    </select>
+
+    <!-- 订单趋势：按日分组统计（替代循环 N 次调用） -->
+    <select id="selectOrderTrend" resultType="java.util.Map">
+        select date(pay_time) as payDate, count(*) as orderCount
+        from wxshop_order
+        where is_pay = 1 and pay_time &gt;= date_sub(curdate(), interval #{days} day)
+        group by date(pay_time)
+        order by payDate
+    </select>
+
+    <!-- 收入趋势：按日分组统计（替代循环 N 次调用） -->
+    <select id="selectRevenueTrend" resultType="java.util.Map">
+        select date(pay_time) as payDate, coalesce(sum(price), 0) as revenue
+        from wxshop_order
+        where is_pay = 1 and pay_time &gt;= date_sub(curdate(), interval #{days} day)
+        group by date(pay_time)
+        order by payDate
+    </select>
+
+    <!-- 订单状态分布：单次查询返回4种状态（替代 4 次独立 count） -->
+    <select id="selectOrderStatus" resultType="java.util.Map">
+        select count(case when is_pay = 0 then 1 end)                  as unpaid,
+               count(case when is_pay = 1 and is_taken = 0 then 1 end) as paid,
+               count(case when is_pay = 1 and is_taken = 1 then 1 end) as taken,
+               count(*)                                                as total
+        from wxshop_order
+    </select>
+
+    <!-- ============ 小程序端查询（从注解迁移） ============ -->
+
+    <!-- 小程序端: 用户已支付订单游标分页（动态 SQL） -->
+    <select id="selectByUserId" resultType="fun.xingji.wxshop.entity.Order">
+        select id, user_id, price, promotion, number, is_pay, is_taken, comment,
+        create_time, pay_time, taken_time
+        from wxshop_order
+        where user_id = #{userId} and is_pay = 1
+        <if test="lastId != null and lastId > 0">
+            and id &lt; #{lastId}
+        </if>
+        order by id desc
+        limit #{size}
+    </select>
+
+    <!-- 小程序端: 热销商品排行（三表 JOIN + 聚合统计） -->
+    <select id="selectTopFoods" resultType="java.util.Map">
+        select f.id                        as food_id,
+               f.name                      as food_name,
+               f.price,
+               c.name                      as category_name,
+               sum(ofd.number)             as sales,
+               sum(ofd.price * ofd.number) as revenue
+        from wxshop_order_food ofd
+                 join wxshop_food f on ofd.food_id = f.id
+                 join wxshop_category c on f.category_id = c.id
+                 join wxshop_order o on ofd.order_id = o.id
+        where o.is_pay = 1
+          and o.pay_time >= date_sub(now(), interval #{days} day)
+        group by f.id, f.name, f.price, c.name
+        order by sales desc
+            limit #{limit}
+    </select>
+
+</mapper>

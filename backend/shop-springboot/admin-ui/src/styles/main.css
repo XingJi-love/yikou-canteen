@@ -1,0 +1,41 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+    margin: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f5f7fa;
+}
+
+.page-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.page-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.page-title {
+    margin: 0 0 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #303133;
+}
+
+.image-preview {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ebeef5;
+}

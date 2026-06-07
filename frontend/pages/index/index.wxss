@@ -1,0 +1,272 @@
+/**
+ * index.wxss - 首页样式
+ * 包含轮播图、功能入口卡片、菜单启动按钮、品牌展示、联系信息等区块
+ */
+
+/* ============ 全局容器 ============ */
+.container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: 30rpx;
+}
+
+/* ============ 区块一：Banners轮播图 ============ */
+.swiper-wrapper {
+  padding: 16rpx 20rpx 0;
+}
+
+.banner-swiper {
+  height: 340rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 24rpx;
+}
+
+/* ============ 区块二：今日推荐 + 功能入口 ============ */
+.feature-section {
+  display: flex;
+  padding: 20rpx;
+  gap: 16rpx;
+}
+
+/* 左侧：今日推荐卡片 */
+.recommend-card {
+  flex: 1.55;
+  height: 300rpx;
+  position: relative;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.recommend-image {
+  width: 100%;
+  height: 100%;
+}
+
+.recommend-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx 18rpx 16rpx;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.recommend-tag {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4rpx 16rpx;
+  font-size: 22rpx;
+  color: #fff;
+  background: linear-gradient(135deg, #FF6B35, #FF8C42);
+  border-radius: 20rpx;
+  font-weight: 600;
+}
+
+.recommend-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recommend-name {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 700;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+}
+
+.recommend-price {
+  color: #FFD93D;
+  font-size: 36rpx;
+  font-weight: 800;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.3);
+}
+
+/* 右侧：功能按钮 */
+.action-buttons {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.action-btn {
+  flex: 1;
+  border-radius: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.pickup-btn {
+  background: #FFFFFF;
+}
+
+.delivery-btn {
+  background: linear-gradient(135deg, #FF7A45, #FF6B35);
+}
+
+.action-icon-wrap {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pickup-icon {
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.delivery-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.iconfont {
+  font-size: 40rpx;
+}
+
+.svg-icon {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.action-text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.delivery-text {
+  color: #FFFFFF;
+}
+
+/* ============ 区块三：开启点餐之旅 ============ */
+.menu-bar {
+  display: flex;
+  margin-top: 28rpx;
+  padding: 0 20rpx;
+}
+
+.menu-block {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.menu-start {
+  text-align: center;
+  font-size: 34rpx;
+  color: #fff;
+  padding: 22rpx 120rpx;
+  background: linear-gradient(135deg, #FF9C35, #FF7A45);
+  border-radius: 50rpx;
+  letter-spacing: 4rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 156, 53, 0.35);
+  font-weight: 600;
+}
+
+/* ============ 区块四：店铺品牌信息 ============ */
+.store-brand {
+  margin-top: 48rpx;
+  text-align: center;
+  padding: 0 20rpx;
+}
+
+.store-name {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 800;
+  color: #FF6B35;
+  letter-spacing: 4rpx;
+}
+
+.store-subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: #888;
+  margin-top: 10rpx;
+  letter-spacing: 2rpx;
+}
+
+.store-tags {
+  display: flex;
+  justify-content: center;
+  gap: 24rpx;
+  margin-top: 28rpx;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 14rpx 24rpx;
+  background: #FAFAFA;
+  border-radius: 36rpx;
+  border: 2rpx solid #F0F0F0;
+}
+
+.tag-svg-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.tag-text {
+  font-size: 24rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+/* ============ 区块五：店铺介绍与联系信息 ============ */
+.store-detail {
+  margin-top: 36rpx;
+  padding: 0 36rpx;
+}
+
+.store-desc {
+  display: block;
+  font-size: 26rpx;
+  color: #555;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+.contact-list {
+  margin-top: 28rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 12rpx 0;
+}
+
+.contact-svg-icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+}
+
+.contact-text {
+  font-size: 26rpx;
+  color: #444;
+}

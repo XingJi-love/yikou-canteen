@@ -1,0 +1,44 @@
+<!--
+  登录页模板（pages/login/login.wxml）
+  展示品牌 Logo、名称，提供微信一键登录按钮
+  需先勾选同意隐私协议和用户协议
+-->
+<view class="login-container">
+    <!-- 背景图片 -->
+    <image class="bg-image" src="/images/start.png" mode="aspectFill"></image>
+
+    <!-- 登录卡片 -->
+    <view class="login-card">
+        <!-- Logo图标 -->
+        <view class="icon-wrapper">
+            <image class="logo-icon" src="/images/logo.png" mode="aspectFit"></image>
+        </view>
+
+        <!-- 标题 -->
+        <view class="title">一口食堂</view>
+        <view class="subtitle">登录享受更多会员权益</view>
+
+        <!-- 微信一键登录按钮 -->
+        <button
+                class="wechat-login-btn {{ !agreed ? 'disabled' : '' }}"
+                open-type="{{ agreed ? 'getPhoneNumber' : '' }}"
+                bindgetphonenumber="getPhoneNumber"
+                disabled="{{ !agreed }}">
+            <image class="wechat-icon" src="/images/icons/微信.svg" mode="aspectFit"></image>
+            <text>微信一键登录</text>
+        </button>
+
+        <!-- 协议勾选 -->
+        <view class="agreement" bindtap="toggleAgreement">
+            <view class="checkbox {{ agreed ? 'checked' : '' }}">
+                <text wx:if="{{ agreed }}">✓</text>
+            </view>
+            <view class="agreement-text">
+                <text>我已阅读并同意</text>
+                <text class="link" catchtap="openPrivacy">《隐私协议》</text>
+                <text>和</text>
+                <text class="link" catchtap="openUserAgreement">《用户协议》</text>
+            </view>
+        </view>
+    </view>
+</view>

@@ -1,0 +1,201 @@
+<!--
+  个人中心模板（pages/record/record.wxml）
+  顶部用户头像/昵称 → 统计卡片（累计消费/次数/等级）
+  → 功能菜单网格（订单/消费记录/信息/联系商家/关于/缓存/更新/退出）
+  → 消费记录列表 → 底部编辑个人资料弹窗
+-->
+<view class="profile-page">
+    <!-- 用户头部区域 -->
+    <view class="header-area">
+        <view class="header-bg"></view>
+        <view class="header-content">
+            <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+                <image class="avatar" src="{{ userInfo.avatarUrl || defaultAvatar }}" mode="aspectFill"/>
+                <view class="avatar-edit-icon">
+                    <image class="camera-svg" src="/images/icon-camera.svg" mode="aspectFit"/>
+                </view>
+            </button>
+            <view class="user-info">
+                <view class="nickname" bindtap="showEditPopup">{{ userInfo.nickname || '点击设置昵称' }}</view>
+                <view class="user-meta" bindtap="showEditPopup">
+                    <text class="meta-text">{{ userInfo.phone ? '已绑定手机' : '未绑定手机' }}</text>
+                    <text class="arrow">›</text>
+                </view>
+            </view>
+            <view class="edit-btn" bindtap="showEditPopup">
+                <text class="edit-text">编辑资料</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 统计数据卡片 -->
+    <view class="stats-card">
+        <view class="stat-item">
+            <text class="stat-value">¥{{ totalSpend }}</text>
+            <text class="stat-label">累计消费</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+            <text class="stat-value">{{ list.length }}</text>
+            <text class="stat-label">消费次数</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+            <text class="stat-value">{{ memberLevel }}</text>
+            <text class="stat-label">会员等级</text>
+        </view>
+    </view>
+
+    <!-- 功能菜单网格 -->
+    <view class="menu-card">
+        <view class="menu-grid">
+            <view class="menu-item" bindtap="navigateToOrder">
+                <view class="menu-icon-wrap order-icon">
+                    <image class="menu-icon-svg" src="/images/icon-order.svg" mode="aspectFit"/>
+                </view>
+                <text class="menu-text">我的订单</text>
+            </view>
+            <view class="menu-item">
+                <view class="menu-icon-wrap record-icon">
+                    <image class="menu-icon-svg" src="/images/icon-record.svg" mode="aspectFit"/>
+                </view>
+                <text class="menu-text">消费记录</text>
+            </view>
+            <view class="menu-item" bindtap="showEditPopup">
+                <view class="menu-icon-wrap profile-icon">
+                    <image class="menu-icon-svg" src="/images/icon-profile.svg" mode="aspectFit"/>
+                </view>
+                <text class="menu-text">个人信息</text>
+            </view>
+            <view class="menu-item" bindtap="contactUs">
+                <view class="menu-icon-wrap contact-icon">
+                    <image class="menu-icon-svg" src="/images/icon-contact.svg" mode="aspectFit"/>
+                </view>
+                <text class="menu-text">联系商家</text>
+            </view>
+            <view class="menu-item" bindtap="aboutUs">
+                <view class="menu-icon-wrap about-icon">
+                    <image class="menu-icon-svg" src="/images/icon-about.svg" mode="aspectFit"/>
+                </view>
+                <text class="menu-text">关于我们</text>
+            </view>
+            <view class="menu-item" bindtap="clearCache">
+                <view class="menu-icon-wrap cache-icon">
+                    <image class="menu-icon-svg" src="/images/icon-cache.svg" mode="aspectFit"/>
+                </view>
+                <text class="menu-text">清除缓存</text>
+            </view>
+            <view class="menu-item" bindtap="checkUpdate">
+                <view class="menu-icon-wrap update-icon">
+                    <image class="menu-icon-svg" src="/images/icon-update.svg" mode="aspectFit"/>
+                </view>
+                <text class="menu-text">检查更新</text>
+            </view>
+            <view class="menu-item" bindtap="logout">
+                <view class="menu-icon-wrap logout-icon">
+                    <image class="menu-icon-svg" src="/images/icon-logout.svg" mode="aspectFit"/>
+                </view>
+                <text class="menu-text">退出登录</text>
+            </view>
+        </view>
+    </view>
+
+    <!-- 消费记录列表区 -->
+    <view class="record-section">
+        <view class="section-header">
+            <text class="section-title">消费记录</text>
+            <text class="section-more">共 {{ list.length }} 条 ›</text>
+        </view>
+
+        <view class="record-list" wx:if="{{ list.length > 0 }}">
+            <view class="record-item" wx:for="{{ list }}" wx:key="id">
+                <view class="record-left">
+                    <view class="record-type">
+                        <text class="type-icon">¥</text>
+                        <text class="type-name">消费</text>
+                    </view>
+                    <view class="record-time">{{ item.pay_time }}</view>
+                </view>
+                <view class="record-right">
+                    <text class="record-price">{{ priceFormat(item.price) }}</text>
+                </view>
+            </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:else>
+            <image class="empty-icon-svg" src="/images/icon-empty.svg" mode="aspectFit"/>
+            <text class="empty-text">暂无消费记录</text>
+            <text class="empty-sub">快去下单品尝美食吧~</text>
+        </view>
+    </view>
+</view>
+
+<!-- 个人信息编辑弹窗 -->
+<view class="popup-mask" wx:if="{{ showPopup }}" bindtap="hideEditPopup"></view>
+<view class="popup-container {{ showPopup ? 'show' : '' }}" catchtouchmove="preventMove">
+    <view class="popup-header">
+        <text class="popup-title">编辑个人资料</text>
+        <view class="popup-close" bindtap="hideEditPopup">✕</view>
+    </view>
+
+    <view class="popup-body">
+        <view class="form-item">
+            <text class="form-label">头像</text>
+            <button class="form-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+                <image class="form-avatar" src="{{ editForm.avatarUrl || defaultAvatar }}" mode="aspectFill"/>
+                <text class="avatar-change-text">更换</text>
+            </button>
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">昵称</text>
+            <input
+                    class="form-input"
+                    type="nickname"
+                    placeholder="请输入您的昵称"
+                    value="{{ editForm.nickname }}"
+                    bindinput="onNicknameInput"
+                    maxlength="20"
+            />
+        </view>
+
+        <view class="form-item">
+            <text class="form-label">手机号</text>
+            <input
+                    class="form-input"
+                    type="number"
+                    placeholder="请输入手机号"
+                    value="{{ editForm.phone }}"
+                    bindinput="onPhoneInput"
+                    maxlength="11"
+            />
+        </view>
+
+        <view class="form-item form-item-last">
+            <text class="form-label">性别</text>
+            <picker
+                    mode="selector"
+                    range="{{ genderOptions }}"
+                    value="{{ editForm.genderIndex }}"
+                    bindchange="onGenderChange"
+            >
+                <view class="form-picker">
+                    <text class="picker-text">{{ genderOptions[editForm.genderIndex] }}</text>
+                    <text class="picker-arrow">▼</text>
+                </view>
+            </picker>
+        </view>
+    </view>
+
+    <view class="popup-footer">
+        <button class="btn-cancel" bindtap="hideEditPopup">取消</button>
+        <button class="btn-submit" bindtap="submitProfile" loading="{{ submitting }}">保存</button>
+    </view>
+</view>
+
+<wxs module="priceFormat">
+    module.exports = function (price) {
+        return '¥ ' + parseFloat(price)
+    }
+</wxs>

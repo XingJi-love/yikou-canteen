@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" monitorInterval="30">
+    <Properties>
+        <Property name="LOG_PATH">logs</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- 控制台输出 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <!-- 文件输出（所有日志） -->
+        <RollingFile name="AllFile"
+                     fileName="${LOG_PATH}/wxshop-all.log"
+                     filePattern="${LOG_PATH}/wxshop-all.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <!-- 文件输出（错误日志） -->
+        <RollingFile name="ErrorFile"
+                     fileName="${LOG_PATH}/wxshop-error.log"
+                     filePattern="${LOG_PATH}/wxshop-error.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="20MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <!-- 文件输出（SQL日志） -->
+        <RollingFile name="SqlFile"
+                     fileName="${LOG_PATH}/wxshop-sql.log"
+                     filePattern="${LOG_PATH}/wxshop-sql.%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="14"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- MyBatis SQL 日志 -->
+        <Logger name="fun.xingji.wxshop.mapper" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="SqlFile"/>
+        </Logger>
+
+        <!-- Spring / 业务日志 -->
+        <Logger name="org.springframework" level="INFO"/>
+
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="AllFile"/>
+            <AppenderRef ref="ErrorFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
