@@ -77,3 +77,23 @@ export const getStatisticsRevenue = (days = 7) => request.get('/statistics/reven
 export const getStatisticsCategoryDistribution = () => request.get('/statistics/category-distribution')
 export const getStatisticsTopFoods = (limit = 10, days = 30) => request.get('/statistics/top-foods', { params: { limit, days } })
 export const getStatisticsOrderStatus = () => request.get('/statistics/order-status')
+
+// ==================== AI 助手 ====================
+
+/** 获取菜品列表（供下拉选择） */
+export const getAiFoods = () => request.get('/ai/foods')
+/** AI 接口超时时间：120 秒（大模型生成内容较慢） */
+const AI_TIMEOUT = 120000
+
+/** 菜品描述生成 */
+export const generateFoodDescription = (foodName, category, price) =>
+  request.post('/ai/food-description', { foodName, category, price }, { timeout: AI_TIMEOUT })
+/** 每日经营简报 */
+export const generateDailyBrief = (date) =>
+  request.post('/ai/daily-brief', { date }, { timeout: AI_TIMEOUT })
+/** 智能套餐推荐 */
+export const generateComboRecommend = (days) =>
+  request.post('/ai/combo-recommend', { days }, { timeout: AI_TIMEOUT })
+/** 营销活动参谋 */
+export const generateMarketingAdvice = () =>
+  request.post('/ai/marketing-advice', {}, { timeout: AI_TIMEOUT })

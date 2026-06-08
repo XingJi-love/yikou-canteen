@@ -38,6 +38,7 @@ public class AdminSettingService extends BaseService {
         res.put("recommend_img", settingService.get("recommend_img"));
         res.put("recommend_name", settingService.get("recommend_name"));
         res.put("recommend_price", settingService.get("recommend_price"));
+        res.put("recommend_desc", settingService.get("recommend_desc"));
         res.put("store_name", settingService.get("store_name"));
         res.put("store_subtitle", settingService.get("store_subtitle"));
         res.put("store_description", settingService.get("store_description"));
@@ -59,6 +60,7 @@ public class AdminSettingService extends BaseService {
         settings.put("recommend_img", stringValue(payload.get("recommend_img")));
         settings.put("recommend_name", stringValue(payload.get("recommend_name")));
         settings.put("recommend_price", stringValue(payload.get("recommend_price")));
+        settings.put("recommend_desc", stringValue(payload.get("recommend_desc")));
         settings.put("store_name", stringValue(payload.get("store_name")));
         settings.put("store_subtitle", stringValue(payload.get("store_subtitle")));
         settings.put("store_description", stringValue(payload.get("store_description")));

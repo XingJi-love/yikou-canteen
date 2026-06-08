@@ -98,6 +98,17 @@ public class GlobalExceptionHandler {
         return Map.of("code", 0, "msg", "上传文件超过" + String.format("%.1f", maxSizeMB) + "MB限制");
     }
 
+    // ==================== AI 服务异常 ====================
+
+    /**
+     * 处理 AI 服务调用失败
+     */
+    @ExceptionHandler(fun.xingji.wxshop.ai.service.AiService.AiServiceException.class)
+    public Map<String, Object> handleAiServiceException(fun.xingji.wxshop.ai.service.AiService.AiServiceException ex) {
+        log.warn("AI 服务异常: {}", ex.getMessage());
+        return Map.of("code", 0, "msg", ex.getMessage());
+    }
+
     // ==================== 数据访问异常 ====================
 
     /**

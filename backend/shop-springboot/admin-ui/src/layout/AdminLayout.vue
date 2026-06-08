@@ -42,6 +42,10 @@
           <el-icon><Setting /></el-icon>
           <template #title>系统设置</template>
         </el-menu-item>
+        <el-menu-item index="/ai">
+          <el-icon><MagicStick /></el-icon>
+          <template #title>AI 助手</template>
+        </el-menu-item>
         <el-menu-item index="/password">
           <el-icon><Lock /></el-icon>
           <template #title>修改密码</template>
@@ -106,7 +110,8 @@
     Fold,
     Expand,
     ArrowDown,
-    UserFilled
+    UserFilled,
+    MagicStick
   } from '@element-plus/icons-vue'
 
   const route = useRoute()

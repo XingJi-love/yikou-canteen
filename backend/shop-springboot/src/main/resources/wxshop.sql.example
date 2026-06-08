@@ -8,17 +8,6 @@ CREATE DATABASE IF NOT EXISTS `wxshop` DEFAULT CHARACTER SET utf8mb4 COLLATE utf
 USE `wxshop`;
 
 -- ----------------------------
--- 已有数据库升级：扩展 wxshop_user 表支持个人信息字段
--- 如果是已有数据库，请单独执行以下 ALTER 语句
--- ----------------------------
--- ALTER TABLE `wxshop_user`
---   ADD COLUMN `nickname` VARCHAR(100) DEFAULT '' NOT NULL COMMENT '用户昵称' AFTER `openid`,
---   ADD COLUMN `avatar_url` VARCHAR(500) DEFAULT '' NOT NULL COMMENT '头像URL' AFTER `nickname`,
---   ADD COLUMN `phone` VARCHAR(20) DEFAULT '' NOT NULL COMMENT '手机号' AFTER `avatar_url`,
---   ADD COLUMN `gender` TINYINT UNSIGNED DEFAULT 0 NOT NULL COMMENT '性别: 0=未知, 1=男, 2=女' AFTER `phone`,
---   ADD COLUMN `update_time` DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间' AFTER `create_time`;
-
--- ----------------------------
 -- 1. 系统配置表 (键值对存储)
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS `wxshop_setting` (
@@ -28,8 +17,8 @@ CREATE TABLE IF NOT EXISTS `wxshop_setting` (
 
 INSERT INTO `wxshop_setting` (`name`, `value`) VALUES
 -- 微信小程序凭证（请替换为真实的 AppID 和 AppSecret）
-('appid', 'wx74bed9598a9938f7'),
-('appsecret', '79199915b5e3d5284be1f31d822c6f63'),
+('appid', '你的AppID'),
+('appsecret', '你的AppSecret'),
 -- 满减优惠配置: 满 k 元减 v 元
 ('promotion', '[{"k":50,"v":10}]'),
 -- 首页轮播图 (JSON数组，支持多张)

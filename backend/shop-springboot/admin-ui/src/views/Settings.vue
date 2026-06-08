@@ -18,6 +18,7 @@ const form = reactive({
   recommend_img: '/static/uploads/foods/15.jpg',
   recommend_name: '烧味双拼饭',
   recommend_price: '68',
+  recommend_desc: '',
   store_name: '一口食堂',
   store_subtitle: '港式美味 · 用心烹饪',
   store_description: '正宗港式茶餐厅，传承香港饮食文化。我们坚持使用新鲜食材，为顾客提供地道的港式美食体验。',
@@ -38,6 +39,7 @@ const loadData = async () => {
     form.recommend_img = data.recommend_img || ''
     form.recommend_name = data.recommend_name || ''
     form.recommend_price = data.recommend_price || ''
+    form.recommend_desc = data.recommend_desc || ''
     form.store_name = data.store_name || ''
     form.store_subtitle = data.store_subtitle || ''
     form.store_description = data.store_description || ''
@@ -151,6 +153,9 @@ onMounted(loadData)
         <el-input v-model="form.recommend_price" placeholder="例如：68">
           <template #prepend>¥</template>
         </el-input>
+      </el-form-item>
+      <el-form-item label="菜品描述">
+        <el-input v-model="form.recommend_desc" type="textarea" :rows="3" placeholder="推荐菜品的描述文案（可用AI助手生成）"/>
       </el-form-item>
 
       <el-divider content-position="left">店铺信息</el-divider>

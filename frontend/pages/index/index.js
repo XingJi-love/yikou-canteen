@@ -11,6 +11,7 @@ Page({
         recommend_img: '',        // 今日推荐菜品图片
         recommend_name: '烧味双拼饭',
         recommend_price: '68',
+        recommend_desc: '',
         store_name: '一口食堂',
         store_subtitle: '港式美味 · 用心烹饪',
         store_description: '正宗港式茶餐厅，传承香港饮食文化。我们坚持使用新鲜食材，为顾客提供地道的港式美食体验。',
@@ -36,6 +37,7 @@ Page({
                     recommend_img: data.recommend_img || '',
                     recommend_name: data.recommend_name || '烧味双拼饭',
                     recommend_price: data.recommend_price || '68',
+                    recommend_desc: data.recommend_desc || '',
                     store_name: data.store_name || '一口食堂',
                     store_subtitle: data.store_subtitle || '港式美味 · 用心烹饪',
                     store_description: data.store_description || '正宗港式茶餐厅，传承香港饮食文化。我们坚持使用新鲜食材，为顾客提供地道的港式美食体验。',

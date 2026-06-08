@@ -61,6 +61,7 @@ public class FoodService extends BaseService {
         String recommendImg = CommonUtil.urlFix(domain, settingService.get("recommend_img"));
         String recommendName = settingService.get("recommend_name");
         String recommendPrice = settingService.get("recommend_price");
+        String recommendDesc = settingService.get("recommend_desc");
 
         String storeName = settingService.get("store_name");
         String storeSubtitle = settingService.get("store_subtitle");
@@ -76,6 +77,7 @@ public class FoodService extends BaseService {
         res.put("recommend_img", recommendImg);
         res.put("recommend_name", recommendName != null ? recommendName : "烧味双拼饭");
         res.put("recommend_price", recommendPrice != null ? recommendPrice : "68");
+        res.put("recommend_desc", recommendDesc != null ? recommendDesc : "");
         res.put("store_name", storeName != null ? storeName : "一口食堂");
         res.put("store_subtitle", storeSubtitle != null ? storeSubtitle : "港式美味 · 用心烹饪");
         res.put("store_description", storeDescription != null ? storeDescription : "正宗港式茶餐厅，传承香港饮食文化。我们坚持使用新鲜食材，为顾客提供地道的港式美食体验。");

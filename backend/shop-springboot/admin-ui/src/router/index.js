@@ -16,6 +16,7 @@ const CategoryList = () => import('@/views/CategoryList.vue')
 const UserList = () => import('@/views/UserList.vue')
 const Settings = () => import('@/views/Settings.vue')
 const Password = () => import('@/views/Password.vue')
+const AiAssistant = () => import('@/views/AiAssistant.vue')
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -39,6 +40,7 @@ const router = createRouter({
                 { path: 'categories', name: 'Categories', component: CategoryList, meta: { title: '分类管理' } },
                 { path: 'users', name: 'Users', component: UserList, meta: { title: '客户管理' } },
                 { path: 'settings', name: 'Settings', component: Settings, meta: { title: '系统设置' } },
+                { path: 'ai', name: 'AiAssistant', component: AiAssistant, meta: { title: 'AI 助手' } },
                 { path: 'password', name: 'Password', component: Password, meta: { title: '修改密码' } }
             ]
         }

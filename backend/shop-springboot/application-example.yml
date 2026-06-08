@@ -17,6 +17,13 @@ spring:
     multipart:
       max-file-size: 10MB   # 单文件最大 10MB
       max-request-size: 10MB # 单次请求最大 10MB
+  # Spring AI Alibaba (DashScope + DeepSeek) — 用于 AI 智能助手功能
+  ai:
+    dashscope:
+      api-key: your_dashscope_api_key       # ⚠️ 请替换为你的阿里云 DashScope API Key
+      chat:
+        options:
+          model: deepseek-v4-flash          # 可选模型: deepseek-v3 / deepseek-r1 / qwen-plus 等
 
 # ==================== MyBatis 配置 ====================
 mybatis:

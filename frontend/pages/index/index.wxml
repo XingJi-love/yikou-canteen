@@ -26,6 +26,7 @@
             <image src="{{ recommend_img }}" class="recommend-image" mode="aspectFill"/>
             <view class="recommend-overlay">
                 <view class="recommend-tag">今日推荐</view>
+                <text class="recommend-desc" wx:if="{{ recommend_desc }}">{{ recommend_desc }}</text>
                 <view class="recommend-info">
                     <text class="recommend-name">{{ recommend_name }}</text>
                     <text class="recommend-price">¥{{ recommend_price }}</text>
