@@ -46,6 +46,14 @@ public class FoodController {
         return foodService.list(domain(request));
     }
 
+    /**
+     * GET /api/food/detail - 菜品详情
+     */
+    @GetMapping("/detail")
+    public Map<String, Object> detail(@RequestParam("id") Integer id, HttpServletRequest request) {
+        return foodService.detail(id, domain(request));
+    }
+
     @GetMapping("/order")
     public Map<String, Object> order(@RequestParam("id") Integer id, HttpSession session, HttpServletRequest request) {
         return foodService.getOrder(userId(session), id, domain(request));

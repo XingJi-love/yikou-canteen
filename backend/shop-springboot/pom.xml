@@ -94,6 +94,41 @@
             <groupId>com.alibaba.cloud.ai</groupId>
             <artifactId>spring-ai-alibaba-starter</artifactId>
             <version>1.0.0-M5.1</version>
+            <exclusions>
+                <!-- 排除传递依赖中有 POM bug 的 protobuf，单独声明稳定版本 -->
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java-util</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+                <!-- 排除使用版本范围的 tea，单独声明固定版本避免镜像无法解析 -->
+                <exclusion>
+                    <groupId>com.aliyun</groupId>
+                    <artifactId>tea</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- 固定 protobuf 版本，消除传递依赖 POM 无效告警（protobuf-java-util:3.22.1 POM 有 bug） -->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>4.0.0-rc-2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>4.0.0-rc-2</version>
+        </dependency>
+
+        <!-- 显式声明 aliyun tea，避免阿里云镜像无法解析版本范围 [1.1.14,2.0.0) -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>tea</artifactId>
+            <version>1.2.0</version>
         </dependency>
     </dependencies>
 

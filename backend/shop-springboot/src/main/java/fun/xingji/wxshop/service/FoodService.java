@@ -90,6 +90,7 @@ public class FoodService extends BaseService {
     /**
      * 菜单列表：按分类分组返回上架商品，填充完整图片域名
      */
+    @SuppressWarnings("unchecked")
     public Map<String, Object> list(String domain) {
         List<Food> foods = foodMapper.selectActiveByCategory();
         Map<Integer, Map<String, Object>> catMap = new LinkedHashMap<>();
@@ -117,9 +118,27 @@ public class FoodService extends BaseService {
     }
 
     /**
+     * 菜品详情：根据 ID 返回完整菜品信息（含分类名称、图片完整域名、描述、标签、月销量）
+     */
+    public Map<String, Object> detail(Integer id, String domain) {
+        Food food = foodMapper.selectDetailById(id);
+        if (food == null) throw new ApiException("菜品不存在");
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("id", food.getId());
+        result.put("category_id", food.getCategoryId());
+        result.put("category_name", food.getCategoryName());
+        result.put("name", food.getName());
+        result.put("price", food.getPrice());
+        result.put("image_url", domain + "/static/uploads/" + food.getImageUrl());
+        result.put("description", food.getDescription() != null ? food.getDescription() : "");
+        return result;
+    }
+
+    /**
      * 创建订单（事务）：解析购物车数据 → 查询商品价格 → 计算满减 → 插入订单 + 明细
      */
     @Transactional
+    @SuppressWarnings("unchecked")
     public Map<String, Object> createOrder(Integer userId, Map<String, Object> payload) {
         Object orderObj = payload.get("order");
         String comment = payload.getOrDefault("comment", "").toString().trim();
@@ -294,6 +313,7 @@ public class FoodService extends BaseService {
     /**
      * 从 JSON 字符串解析 List<String>
      */
+    @SuppressWarnings("unchecked")
     private List<String> readJsonList(String json) {
         if (json == null || json.isBlank()) return List.of();
         try {
@@ -307,6 +327,7 @@ public class FoodService extends BaseService {
     /**
      * 从 JSON 字符串解析 List<Map>
      */
+    @SuppressWarnings("unchecked")
     private List<Map<String, Object>> readJsonMapList(String json) {
         if (json == null || json.isBlank()) return List.of();
         try {

@@ -20,6 +20,7 @@
         <result column="update_time" property="updateTime"/>
         <result column="delete_time" property="deleteTime"/>
         <result column="category_name" property="categoryName"/>
+        <result column="description" property="description"/>
     </resultMap>
 
     <!-- 公共搜索条件片段（countBySearch 和 selectPageBySearch 复用） -->
@@ -55,7 +56,7 @@
     <!-- 管理员端: 商品多条件搜索分页（动态 SQL） -->
     <select id="selectPageBySearch" resultMap="FoodWithCategoryMap">
         select f.id, f.category_id, f.name, f.price, f.image_url, f.status,
-               f.create_time, f.update_time, f.delete_time
+               f.create_time, f.update_time, f.delete_time, f.description
         from wxshop_food f
         <where>
             <include refid="searchConditions"/>
@@ -82,6 +83,17 @@
         group by c.id, c.name
         having foodCount > 0
         order by foodCount desc
+    </select>
+
+    <!-- 小程序端: 获取菜品详情（含分类名称、描述） -->
+    <select id="selectDetailById" resultMap="FoodWithCategoryMap">
+        select f.id, f.category_id, f.name, f.price, f.image_url, f.status,
+               f.description,
+               f.create_time, f.update_time, f.delete_time, c.name as category_name
+        from wxshop_food f
+                 left join wxshop_category c on c.id = f.category_id
+        where f.id = #{id} and f.status = 1 and f.delete_time is null
+        limit 1
     </select>
 
 </mapper>

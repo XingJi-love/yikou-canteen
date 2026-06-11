@@ -8,8 +8,10 @@ import {computed, onMounted, reactive, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {ElMessage} from 'element-plus'
 import {Plus} from '@element-plus/icons-vue'
+import {EditPen} from '@element-plus/icons-vue'
 import {
   createFood,
+  generateFoodDescription,
   getCategories,
   getFood,
   updateFood,
@@ -25,20 +27,26 @@ const isEdit = computed(() => !!foodId.value)
 
 const loading = ref(false)
 const saving = ref(false)
+const generating = ref(false)
 const urlDialogVisible = ref(false)
 const imageUrlInput = ref('')
 const urlUploading = ref(false)
+const tempImageUrl = ref('')
 const categories = ref([])
 const form = reactive({
   category_id: '',
   name: '',
   price: 0,
   status: 1,
-  image_url: ''
+  image_url: '',
+  description: ''
 })
 
-/** 图片完整预览 URL */
-const previewUrl = computed(() => uploadUrl(form.image_url))
+/** 图片完整预览 URL — 优先显示临时预览 */
+const previewUrl = computed(() => {
+  if (tempImageUrl.value) return tempImageUrl.value
+  return uploadUrl(form.image_url)
+})
 
 /** 加载分类下拉选项 */
 const loadCategories = async () => {
@@ -56,6 +64,7 @@ const loadFood = async () => {
     form.price = Number(data.price)
     form.status = data.status
     form.image_url = data.image_url || ''
+    form.description = data.description || ''
   } finally {
     loading.value = false
   }
@@ -86,6 +95,7 @@ const handleUploadFromUrl = async () => {
   try {
     const res = await uploadFromUrl(url, 'food', foodId.value || undefined)
     form.image_url = res.path
+    tempImageUrl.value = '' // 清除临时预览
     if (!foodId.value && res.relation_id) {
       router.replace(`/foods/edit/${res.relation_id}`)
     }
@@ -94,6 +104,39 @@ const handleUploadFromUrl = async () => {
     ElMessage.success('下载成功')
   } finally {
     urlUploading.value = false
+  }
+}
+
+/** URL 即时预览（不下载） */
+const handleUrlPreview = () => {
+  const url = imageUrlInput.value.trim()
+  if (!url) {
+    ElMessage.warning('请输入图片URL')
+    return
+  }
+  if (!url.startsWith('http')) {
+    ElMessage.warning('URL格式不正确，需以 http:// 或 https:// 开头')
+    return
+  }
+  tempImageUrl.value = url
+}
+
+/** AI 生成菜品描述 */
+const handleAiGenerate = async () => {
+  if (!form.name.trim()) {
+    ElMessage.warning('请先填写菜品名称')
+    return
+  }
+  generating.value = true
+  try {
+    const categoryName = categories.value.find(c => c.id === form.category_id)?.name || ''
+    const description = await generateFoodDescription(form.name, categoryName, form.price)
+    form.description = typeof description === 'string' ? description : (description?.content || '')
+    ElMessage.success('AI 描述生成成功')
+  } catch (e) {
+    ElMessage.error('AI 生成失败，请稍后重试')
+  } finally {
+    generating.value = false
   }
 }
 
@@ -151,6 +194,21 @@ onMounted(async () => {
           <el-radio :label="0">下架</el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="详细描述">
+        <div class="desc-area">
+          <el-input v-model="form.description" type="textarea" :rows="4" placeholder="请输入菜品详细描述，如食材、做法、口感等" maxlength="500" show-word-limit/>
+          <el-button
+              class="desc-gen-btn"
+              size="small"
+              :icon="EditPen"
+              :loading="generating"
+              :disabled="generating || !form.name.trim()"
+              @click="handleAiGenerate"
+          >
+            智能描述
+          </el-button>
+        </div>
+      </el-form-item>
       <el-form-item label="菜品图片">
         <div class="upload-area">
           <img v-if="form.image_url" :src="previewUrl" class="image-preview large" alt=""/>
@@ -176,8 +234,12 @@ onMounted(async () => {
             size="large"
             @keyup.enter="handleUploadFromUrl"
         />
+        <div v-if="tempImageUrl" class="url-preview">
+          <img :src="tempImageUrl" alt="预览图"/>
+        </div>
         <template #footer>
           <el-button @click="urlDialogVisible = false">取消</el-button>
+          <el-button type="info" plain :disabled="!imageUrlInput.trim()" @click="handleUrlPreview">即时预览</el-button>
           <el-button type="primary" :loading="urlUploading" @click="handleUploadFromUrl">下载并保存</el-button>
         </template>
       </el-dialog>
@@ -190,6 +252,21 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.desc-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.desc-area .el-textarea {
+  width: 100%;
+}
+
+.desc-gen-btn {
+  align-self: flex-end;
+}
+
 .upload-area {
   display: flex;
   align-items: center;
@@ -204,5 +281,17 @@ onMounted(async () => {
 .image-preview.large {
   width: 120px;
   height: 120px;
+}
+
+.url-preview {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.url-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 6px;
+  border: 1px solid #e4e7ed;
 }
 </style>

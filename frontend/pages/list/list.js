@@ -49,6 +49,14 @@ Page({
     this.setData({ activeIndex: index, tapIndex: index })
   },
 
+  /** 跳转到菜品详情页 */
+  navigateToDetail: function (e) {
+    var id = e.currentTarget.dataset.id
+    wx.navigateTo({
+      url: '/pages/detail/detail?id=' + id
+    })
+  },
+
   /** 右侧列表滚动时实时高亮左侧分类 */
   onFoodScroll: function (e) {
     if (this.disableNextScroll) { this.disableNextScroll = false; return }

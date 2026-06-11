@@ -1,0 +1,190 @@
+/**
+* 菜品详情页样式（pages/detail/detail.wxss）
+* 港式餐饮橙色调主题、沉浸式大图头部、卡片层叠效果
+*/
+page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #F5F5F7;
+}
+
+/* 页面容器 */
+.detail-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+/* ========== 自定义导航栏 ========== */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, #FF9C35 0%, #FF6B35 100%);
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  padding: 0 24rpx;
+  position: relative;
+}
+
+/* 返回按钮：圆形背景增强点击感 */
+.nav-back {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.back-icon {
+  color: #FFFFFF;
+  font-size: 44rpx;
+  font-weight: 300;
+  line-height: 1;
+  margin-top: -4rpx;
+}
+
+/* 导航标题 */
+.nav-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FFFFFF;
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+/* ========== 内容滚动区域 ========== */
+.content-scroll {
+  flex: 1;
+}
+
+/* ========== 加载状态 ========== */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* ========== 菜品大图展示区 ========== */
+.food-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 540rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, #FF9C35 0%, #FF6B35 100%);
+}
+
+.food-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 大图底部渐变蒙层 → 与下方白色卡片无缝衔接 */
+.food-image-wrap::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 80rpx;
+  background: linear-gradient(180deg, rgba(245, 245, 247, 0) 0%, #F5F5F7 100%);
+  pointer-events: none;
+}
+
+/* ========== 信息卡片（白色圆角，层叠效果）========== */
+.info-card {
+  margin: -64rpx 24rpx 0;  /* 负 margin 实现卡片覆盖在大图底部 */
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 36rpx 32rpx 44rpx;
+  box-shadow: 0 8rpx 28rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 10;
+}
+
+/* 名称 + 价格行 */
+.name-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24rpx;
+}
+
+.food-name {
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #1A1A1A;
+  flex: 1;
+  line-height: 1.3;
+  padding-right: 20rpx;
+  letter-spacing: 0.5rpx;
+}
+
+.food-price {
+  font-size: 46rpx;
+  font-weight: 800;
+  color: #F05A86;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* ========== 菜品详细描述 ========== */
+.description {
+  color: #666666;
+  font-size: 28rpx;
+  line-height: 1.85;
+  text-align: justify;
+  letter-spacing: 0.3rpx;
+}
+
+/* ========== 底部固定操作栏 ========== */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+  z-index: 100;
+}
+
+.add-cart-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: linear-gradient(135deg, #FF9C35 0%, #FF6B35 100%);
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 700;
+  border-radius: 44rpx;
+  text-align: center;
+  border: none;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 2rpx;
+  box-shadow: 0 6rpx 18rpx rgba(255, 107, 53, 0.3);
+}
+
+.add-cart-btn::after {
+  border: none;
+}
+
+.add-cart-btn:active {
+  opacity: 0.88;
+  transform: scale(0.98);
+}

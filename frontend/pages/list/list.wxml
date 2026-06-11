@@ -21,7 +21,8 @@
                  bindscroll="onFoodScroll">
         <block wx:for="{{ foodList }}" wx:for-item="category" wx:key="id" wx:for-index="category_index">
             <view class="food-category" id="category_{{ category_index }}">{{ category.name }}</view>
-            <view class="food-item" wx:for="{{ category.food }}" wx:for-item="food" wx:key="id">
+            <view class="food-item" wx:for="{{ category.food }}" wx:for-item="food" wx:key="id"
+                  bindtap="navigateToDetail" data-id="{{ food.id }}">
                 <view class="food-item-pic">
                     <image mode="widthFix" src="{{ food.image_url }}"/>
                 </view>
@@ -31,7 +32,7 @@
                 </view>
                 <view class="food-item-opt">
                     <i class="iconfont" data-category_index="{{ category_index }}" data-index="{{ index }}"
-                       bindtap="addToCart"></i>
+                       catchtap="addToCart"></i>
                 </view>
             </view>
         </block>

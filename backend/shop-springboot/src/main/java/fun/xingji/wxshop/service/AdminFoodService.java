@@ -53,6 +53,7 @@ public class AdminFoodService extends BaseService {
             map.put("create_time", food.getCreateTime());
             map.put("update_time", food.getUpdateTime());
             map.put("delete_time", food.getDeleteTime());
+            map.put("description", food.getDescription());
             list.add(map);
         }
         Map<String, Object> res = new HashMap<>();
@@ -72,6 +73,7 @@ public class AdminFoodService extends BaseService {
         row.put("price", food.getPrice());
         row.put("image_url", food.getImageUrl());
         row.put("status", food.getStatus());
+        row.put("description", food.getDescription());
         return row;
     }
 
@@ -82,6 +84,7 @@ public class AdminFoodService extends BaseService {
         BigDecimal price = CommonUtil.toDecimal(payload.get("price"));
         int status = CommonUtil.toInt(payload.get("status")) == null ? 0 : CommonUtil.toInt(payload.get("status"));
         String imageUrl = payload.get("image_url") == null ? "" : String.valueOf(payload.get("image_url")).trim();
+        String description = payload.get("description") == null ? "" : String.valueOf(payload.get("description")).trim();
         if (categoryId == null || categoryId <= 0 || !StringUtils.hasText(name))
             throw new ApiException("商品信息不完整");
 
@@ -89,7 +92,8 @@ public class AdminFoodService extends BaseService {
             Food food = new Food();
             food.setCategoryId(categoryId); food.setName(name);
             food.setPrice(price); food.setImageUrl(imageUrl);
-            food.setStatus(status); food.setCreateTime(LocalDateTime.now());
+            food.setStatus(status); food.setDescription(description);
+            food.setCreateTime(LocalDateTime.now());
             foodMapper.insert(food);
             Map<String, Object> res = new HashMap<>();
             res.put("msg", "添加成功"); res.put("id", food.getId());
@@ -98,7 +102,8 @@ public class AdminFoodService extends BaseService {
         Food food = new Food();
         food.setId(id); food.setCategoryId(categoryId); food.setName(name);
         food.setPrice(price); food.setImageUrl(imageUrl);
-        food.setStatus(status); food.setUpdateTime(LocalDateTime.now());
+        food.setStatus(status); food.setDescription(description);
+        food.setUpdateTime(LocalDateTime.now());
         if (foodMapper.update(food) <= 0) throw new ApiException("商品记录不存在");
         return Map.of("msg", "保存成功");
     }

@@ -2,8 +2,8 @@
  * Vue Router 配置（Hash 模式）
  * 惰性加载所有页面组件，路由守卫使用 AuthStore 校验管理员登录状态
  */
-import { createRouter, createWebHashHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import {createRouter, createWebHashHistory} from 'vue-router'
+import {useAuthStore} from '@/stores/auth'
 
 // 惰性加载页面组件（按需加载）
 const AdminLayout = () => import('@/layout/AdminLayout.vue')
@@ -25,23 +25,28 @@ const router = createRouter({
             path: '/login',
             name: 'Login',
             component: Login,
-            meta: { public: true }
+            meta: {public: true}
         },
         {
             path: '/',
             component: AdminLayout,
             redirect: '/dashboard',
             children: [
-                { path: 'dashboard', name: 'Dashboard', component: Dashboard, meta: { title: '首页' } },
-                { path: 'orders/pending', name: 'OrdersPending', component: OrderList, meta: { title: '待取餐', pending: true } },
-                { path: 'orders', name: 'Orders', component: OrderList, meta: { title: '订单管理' } },
-                { path: 'foods', name: 'Foods', component: FoodList, meta: { title: '菜品管理' } },
-                { path: 'foods/edit/:id?', name: 'FoodEdit', component: FoodEdit, meta: { title: '编辑菜品' } },
-                { path: 'categories', name: 'Categories', component: CategoryList, meta: { title: '分类管理' } },
-                { path: 'users', name: 'Users', component: UserList, meta: { title: '客户管理' } },
-                { path: 'settings', name: 'Settings', component: Settings, meta: { title: '系统设置' } },
-                { path: 'ai', name: 'AiAssistant', component: AiAssistant, meta: { title: 'AI 助手' } },
-                { path: 'password', name: 'Password', component: Password, meta: { title: '修改密码' } }
+                {path: 'dashboard', name: 'Dashboard', component: Dashboard, meta: {title: '首页'}},
+                {
+                    path: 'orders/pending',
+                    name: 'OrdersPending',
+                    component: OrderList,
+                    meta: {title: '待取餐', pending: true}
+                },
+                {path: 'orders', name: 'Orders', component: OrderList, meta: {title: '订单管理'}},
+                {path: 'foods', name: 'Foods', component: FoodList, meta: {title: '菜品管理'}},
+                {path: 'foods/edit/:id?', name: 'FoodEdit', component: FoodEdit, meta: {title: '编辑菜品'}},
+                {path: 'categories', name: 'Categories', component: CategoryList, meta: {title: '分类管理'}},
+                {path: 'users', name: 'Users', component: UserList, meta: {title: '客户管理'}},
+                {path: 'ai', name: 'AiAssistant', component: AiAssistant, meta: {title: 'AI 助手'}},
+                {path: 'settings', name: 'Settings', component: Settings, meta: {title: '系统设置'}},
+                {path: 'password', name: 'Password', component: Password, meta: {title: '修改密码'}}
             ]
         }
     ]

@@ -19,24 +19,27 @@ public interface FoodMapper {
     /** 小程序端：获取所有上架商品（含分类名称，按分类排序） */
     List<Food> selectActiveByCategory();
 
+    /** 小程序端：根据 ID 获取菜品详情（含分类名称、描述） - XML 实现 */
+    Food selectDetailById(Integer id);
+
     /** 商品总数 */
     @Select("select count(*) from wxshop_food")
     int countTotal();
 
     /** 根据 ID 查询商品 */
-    @Select("select id, category_id, name, price, image_url, status, create_time, update_time, delete_time " +
+    @Select("select id, category_id, name, price, image_url, status, create_time, update_time, delete_time, description " +
             "from wxshop_food where id = #{id} limit 1")
     Food selectById(Integer id);
 
     /** 新增商品 */
-    @Insert("insert into wxshop_food(category_id, name, price, image_url, status, create_time) " +
-            "values(#{categoryId}, #{name}, #{price}, #{imageUrl}, #{status}, #{createTime})")
+    @Insert("insert into wxshop_food(category_id, name, price, image_url, status, description, create_time) " +
+            "values(#{categoryId}, #{name}, #{price}, #{imageUrl}, #{status}, #{description}, #{createTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Food food);
 
     /** 更新商品信息 */
     @Update("update wxshop_food set category_id = #{categoryId}, name = #{name}, price = #{price}, " +
-            "image_url = #{imageUrl}, status = #{status}, update_time = #{updateTime} where id = #{id}")
+            "image_url = #{imageUrl}, status = #{status}, description = #{description}, update_time = #{updateTime} where id = #{id}")
     int update(Food food);
 
     /** 软删除（设置 delete_time） */

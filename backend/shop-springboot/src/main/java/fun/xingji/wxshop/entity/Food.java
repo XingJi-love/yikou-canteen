@@ -27,4 +27,7 @@ public class Food {
 
     /** 分类名称（关联分类表查询时填充，非数据库持久字段） */
     private String categoryName;
+
+    /** 菜品详细描述（支持多行文本） */
+    private String description;
 }

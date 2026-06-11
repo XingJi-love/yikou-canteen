@@ -96,6 +96,14 @@ onMounted(async () => {
         </template>
       </el-table-column>
       <el-table-column prop="name" label="名称" min-width="160"/>
+      <el-table-column label="描述" min-width="200">
+        <template #default="{ row }">
+          <el-tooltip v-if="row.description" :content="row.description" placement="top" :show-after="300">
+            <span class="desc-ellipsis">{{ row.description }}</span>
+          </el-tooltip>
+          <span v-else class="text-muted">-</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="category_name" label="分类" width="120"/>
       <el-table-column prop="price" label="价格" width="90">
         <template #default="{ row }">¥{{ row.price }}</template>
@@ -126,3 +134,18 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.desc-ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+
+.text-muted {
+  color: #909399;
+}
+</style>
